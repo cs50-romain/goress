@@ -5,6 +5,7 @@ import (
 	"os"
 	"regexp"
 	"strconv"
+	"text/tabwriter"
 
 	ps "cs50-romain/goress/process"
 )
@@ -18,6 +19,8 @@ func main() {
 		os.Exit(1)
 	}
 	
+	tabw := tabwriter.NewWriter(os.Stdout, 1, 1, 10, ' ', 0)
+	fmt.Fprintln(tabw, "Process:\tPid:\tMemory (Mb):\t")
 	for _, dir := range dirs {
 		if !nums.Match([]byte(dir.Name())) {
 			continue
@@ -32,6 +35,7 @@ func main() {
 		if err != nil {
 			fmt.Println(err)
 		}
-		fmt.Printf("process: %s, pid: %d, memory: %dMb\n", process.Name(), process.Pid(), process.Memory())
+		fmt.Fprintf(tabw, "%s\t%d\t%d\t\n", process.Name(), process.Pid(), process.Memory())
 	}
+	tabw.Flush()
 }

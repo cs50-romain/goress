@@ -1,5 +1,3 @@
-module cs50-romain/gotess
+module cs50-romain/goress
 
 go 1.20
-
-require github.com/mitchellh/go-ps v1.0.0

@@ -2,19 +2,36 @@ package main
 
 import (
 	"fmt"
-	ps "github.com/mitchellh/go-ps"
 	"os"
+	"regexp"
+	"strconv"
+
+	ps "cs50-romain/goress/process"
 )
 
 func main() {
-	processes, err := ps.Processes()
+	nums := regexp.MustCompile("[0-9]+")
+	// Read /proc directory and find any dir that starts with a num
+	dirs, err := os.ReadDir("/proc")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+	
+	for _, dir := range dirs {
+		if !nums.Match([]byte(dir.Name())) {
+			continue
+		}
 
-	fmt.Println("NAME\t|\tPID")
-	for _, process := range processes {
-		fmt.Printf("%s\t|\t%d\n", process.Executable(), process.Pid())
+		pid, err := strconv.Atoi(dir.Name())
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+		process, err := ps.GetProcess(pid)
+		if err != nil {
+			fmt.Println(err)
+		}
+		fmt.Printf("process: %s, pid: %d, memory: %dMb\n", process.Name(), process.Pid(), process.Memory())
 	}
 }
